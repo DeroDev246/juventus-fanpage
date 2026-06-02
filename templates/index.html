@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% block title %}Juventus FC — Official Fan Page{% endblock %}
+{% block head %}
+<style>
+    .hero {
+        min-height: 100vh;
+        display: flex; flex-direction: column; justify-content: flex-end;
+        padding: 6rem 4rem 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-bg {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+            -45deg,
+            #0a0a0a,
+            #0a0a0a 24px,
+            #0d0d0d 24px,
+            #0d0d0d 48px
+        );
+        z-index: 0;
+    }
+    .hero-accent {
+        position: absolute;
+        top: 0; right: 0;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(135deg, transparent 40%, rgba(212,168,67,0.04) 100%);
+        z-index: 0;
+    }
+    .hero-number {
+        position: absolute;
+        right: 4rem; bottom: 3rem;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 30vw;
+        color: rgba(255,255,255,0.025);
+        line-height: 1;
+        pointer-events: none;
+        z-index: 0;
+        user-select: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+    .hero-eyebrow {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+    .hero-title {
+        font-family: 'Bebas Neue', cursive;
+        font-size: clamp(4rem, 12vw, 11rem);
+        letter-spacing: -1px;
+        line-height: 0.85;
+        margin-bottom: 1.5rem;
+    }
+    .hero-title .line2 { color: var(--gold); }
+    .hero-sub {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 300;
+        max-width: 500px;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+    }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-stats {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 4px;
+        margin-top: 5rem;
+        overflow: hidden;
+    }
+    .hero-stat {
+        background: var(--black);
+        padding: 1.5rem 2rem;
+    }
+    .hero-stat-val {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 3rem;
+        color: var(--gold);
+        display: block;
+        line-height: 1;
+    }
+    .hero-stat-lbl {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    /* SECTIONS */
+    .section { padding: 6rem 4rem; max-width: 1400px; margin: 0 auto; }
+
+    /* LATEST RESULTS */
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1px;
+        background: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+    .result-card {
+        background: var(--gray);
+        padding: 2rem;
+        position: relative;
+        transition: background 0.2s;
+    }
+    .result-card:hover { background: var(--gray-mid); }
+    .result-card .competition {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+    .result-teams {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .result-team { font-weight: 600; font-size: 0.95rem; }
+    .result-score {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2.5rem;
+        letter-spacing: 4px;
+        color: var(--white);
+    }
+    .result-meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+    }
+    .result-outcome {
+        position: absolute; top: 1rem; right: 1rem;
+        width: 8px; height: 8px; border-radius: 50%;
+    }
+    .outcome-w { background: #4ade80; }
+    .outcome-d { background: var(--gold); }
+    .outcome-l { background: #f87171; }
+
+    /* FEATURED PLAYERS */
+    .players-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .player-mini {
+        background: var(--gray);
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--white);
+        transition: all 0.25s;
+        display: block;
+    }
+    .player-mini:hover {
+        border-color: var(--gold);
+        transform: translateY(-4px);
+        background: var(--gray-mid);
+    }
+    .player-mini .avatar {
+        width: 64px; height: 64px;
+        background: linear-gradient(135deg, var(--black), var(--gray-light));
+        border: 2px solid var(--gold);
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.3rem;
+        color: var(--gold);
+    }
+    .player-mini .pname {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    .player-mini .ppos {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+    }
+    .player-mini .pgoals {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2rem;
+        color: var(--gold);
+        display: block;
+        line-height: 1;
+    }
+    .player-mini .pgoals-lbl {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+    }
+
+    /* NEXT MATCH */
+    .next-match {
+        background: var(--gray);
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        padding: 3rem;
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    .next-match-teams {
+        display: flex; align-items: center; gap: 2rem;
+    }
+    .next-match-team { text-align: center; }
+    .next-match-team .tname {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+    .vs {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 3rem;
+        color: var(--text-muted);
+    }
+    .next-match-info .meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+    .next-match-info .time {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 3rem;
+        color: var(--gold);
+        line-height: 1;
+    }
+    .countdown {
+        display: flex; gap: 1rem;
+    }
+    .countdown-unit { text-align: center; }
+    .countdown-unit .val {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2.5rem;
+        display: block;
+        color: var(--white);
+        line-height: 1;
+    }
+    .countdown-unit .unit {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+    .countdown-sep {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2rem;
+        color: var(--gold);
+        align-self: flex-start;
+        padding-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+        .hero { padding: 5rem 1.5rem 2rem; }
+        .hero-stats { grid-template-columns: repeat(2, 1fr); }
+        .players-strip { grid-template-columns: repeat(2, 1fr); }
+        .next-match { flex-direction: column; }
+        .section { padding: 4rem 1.5rem; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-accent"></div>
+    <div class="hero-number">93</div>
+    <div class="hero-content">
+        <p class="hero-eyebrow fade-up fade-up-1">Founded 1897 · Turin, Italy · Serie A</p>
+        <h1 class="hero-title fade-up fade-up-2">
+            FORZA<br>
+            <span class="line2">JUVE</span>
+        </h1>
+        <p class="hero-sub fade-up fade-up-3">
+            36 Scudetti. 14 Coppa Italia. The most decorated club in Italian football history.
+            Follow the Bianconeri through every battle, every victory.
+        </p>
+        <div class="hero-cta fade-up fade-up-4">
+            <a href="/players" class="btn btn-gold">View Squad</a>
+            <a href="/matches" class="btn btn-outline">Match Schedule</a>
+        </div>
+    </div>
+
+    <div class="hero-stats fade-up fade-up-4" style="max-width:1200px;">
+        <div class="hero-stat">
+            <span class="hero-stat-val">36</span>
+            <span class="hero-stat-lbl">Serie A Titles</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-val">14</span>
+            <span class="hero-stat-lbl">Coppa Italia</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-val">2</span>
+            <span class="hero-stat-lbl">Champions Leagues</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-val">127</span>
+            <span class="hero-stat-lbl">Years of History</span>
+        </div>
+    </div>
+</section>
+
+<!-- NEXT MATCH -->
+<div class="section">
+    <p class="section-label fade-up fade-up-1">On the Horizon</p>
+    <h2 class="section-title fade-up fade-up-2">NEXT<br>MATCH</h2>
+    <div class="gold-line"></div>
+    <div class="next-match">
+        <div class="next-match-teams">
+            <div class="next-match-team">
+                <div class="tname">JUVENTUS</div>
+                <span class="badge badge-gold">Home</span>
+            </div>
+            <div class="vs">VS</div>
+            <div class="next-match-team">
+                <div class="tname">NAPOLI</div>
+                <span class="badge badge-white">Away</span>
+            </div>
+        </div>
+        <div class="next-match-info">
+            <div class="meta">Serie A · Matchday 28</div>
+            <div class="time">20:45</div>
+            <div class="meta">Mar 9, 2024 · Allianz Stadium</div>
+        </div>
+        <div id="countdown" class="countdown">
+            <div class="countdown-unit"><span class="val" id="cd-days">--</span><span class="unit">Days</span></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-unit"><span class="val" id="cd-hrs">--</span><span class="unit">Hrs</span></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-unit"><span class="val" id="cd-min">--</span><span class="unit">Min</span></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-unit"><span class="val" id="cd-sec">--</span><span class="unit">Sec</span></div>
+        </div>
+        <a href="/matches" class="btn btn-gold">Full Schedule</a>
+    </div>
+</div>
+
+<!-- RECENT RESULTS -->
+<div class="section" style="padding-top:0;">
+    <p class="section-label">Season so far</p>
+    <h2 class="section-title">RECENT<br>RESULTS</h2>
+    <div class="gold-line"></div>
+    <div class="results-grid" id="results-grid">
+        <div style="padding:2rem;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.7rem;">Loading...</div>
+    </div>
+</div>
+
+<!-- TOP PERFORMERS -->
+<div class="section" style="padding-top:0;">
+    <p class="section-label">Current Season</p>
+    <h2 class="section-title">TOP<br>PERFORMERS</h2>
+    <div class="gold-line"></div>
+    <div class="players-strip" id="players-strip">
+        <div style="padding:2rem;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.7rem;">Loading...</div>
+    </div>
+    <div style="margin-top:2rem;">
+        <a href="/players" class="btn btn-outline">View Full Squad →</a>
+    </div>
+</div>
+
+<script>
+// Countdown
+function updateCountdown() {
+    const match = new Date('2024-03-09T20:45:00');
+    const now = new Date();
+    const diff = match - now;
+    if (diff <= 0) { document.getElementById('countdown').innerHTML = '<span style="color:var(--gold);font-family:Bebas Neue,cursive;font-size:2rem;letter-spacing:2px;">LIVE NOW</span>'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-hrs').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-min').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-sec').textContent = String(s).padStart(2,'0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// Load results
+fetch('/api/matches/results')
+    .then(r => {
+        if (!r.ok) throw new Error ('Status: '+ r.status);
+        return r.json();
+    })
+    .then(results => {
+        const grid = document.getElementById('results-grid');
+        const recent = results.slice(0, 3);
+        grid.innerHTML = recent.map(m => {
+            const isJuve_home = m.home === 'Juventus';
+            const juve_score = isJuve_home ? m.home_score : m.away_score;
+            const opp_score = isJuve_home ? m.away_score : m.home_score;
+            const outcome = juve_score > opp_score ? 'w' : juve_score < opp_score ? 'l' : 'd';
+            const outcomeText = outcome === 'w' ? 'W' : outcome === 'l' ? 'L' : 'D';
+            return `
+            <div class="result-card">
+                <div class="result-outcome outcome-${outcome}"></div>
+                <div class="competition">${m.competition}</div>
+                <div class="result-teams">
+                    <span class="result-team">${m.home}</span>
+                    <span class="result-score">${m.home_score} – ${m.away_score}</span>
+                    <span class="result-team">${m.away}</span>
+                </div>
+                <div class="result-meta">${m.date} · ${m.venue}</div>
+            </div>`;
+        }).join('');
+    });
+
+
+
+// Load top performers
+fetch('/api/players/')
+    .then(r => r.json())
+    .then(players => {
+        const strip = document.getElementById('players-strip');
+        const top = players.sort((a,b) => b.goals - a.goals).slice(0,4);
+        strip.innerHTML = top.map(p => `
+            <a href="/players/${p.id}" class="player-mini">
+                <div class="avatar">
+                    <img src="static/images/players/${p.id}.png"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                        style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top;">
+                        
+                    <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--gold);">
+                        ${p.image_initials}
+                    </span>
+                </div>
+                <div class="pname">${p.name}</div>
+                <div class="ppos">${p.position}</div>
+                <span class="pgoals">${p.goals}</span>
+                <span class="pgoals-lbl">Goals this season</span>
+            </a>
+        `).join('');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Juventus FC{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --white: #f5f5f0;
+            --gold: #d4a843;
+            --gold-light: #e8c875;
+            --gray: #1a1a1a;
+            --gray-mid: #2a2a2a;
+            --gray-light: #3a3a3a;
+            --text-muted: #888;
+            --stripe: #111;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #1f1f1f;
+            padding: 0 2rem;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 12px;
+            text-decoration: none;
+        }
+        .nav-crest {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--black) 50%, var(--white) 50%);
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: var(--gold);
+        }
+        .nav-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            color: var(--white);
+        }
+        .nav-title span { color: var(--gold); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+        /* PAGE WRAPPER */
+        main { padding-top: 64px; }
+
+        /* HERO STRIPE PATTERN */
+        .stripe-bg {
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--black),
+                var(--black) 20px,
+                var(--stripe) 20px,
+                var(--stripe) 40px
+            );
+        }
+
+        /* SECTION */
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            letter-spacing: 2px;
+            line-height: 0.9;
+        }
+
+        /* GOLD LINE */
+        .gold-line {
+            width: 60px; height: 2px;
+            background: var(--gold);
+            margin: 1.5rem 0;
+        }
+
+        /* STAT CHIP */
+        .stat-chip {
+            background: var(--gray-mid);
+            border: 1px solid var(--gray-light);
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            text-align: center;
+        }
+        .stat-chip .val {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: var(--gold);
+            display: block;
+            line-height: 1;
+        }
+        .stat-chip .lbl {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-block;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 2px;
+            border: 1px solid currentColor;
+        }
+        .badge-gold { color: var(--gold); border-color: var(--gold); background: rgba(212,168,67,0.1); }
+        .badge-white { color: var(--white); border-color: rgba(255,255,255,0.3); }
+        .badge-green { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.1); }
+        .badge-red { color: #f87171; border-color: #f87171; background: rgba(248,113,113,0.1); }
+
+        /* BUTTON */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: var(--black);
+        }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+        /* FOOTER */
+        footer {
+            background: var(--gray);
+            border-top: 1px solid #1f1f1f;
+            padding: 3rem 4rem;
+            margin-top: 6rem;
+        }
+        .footer-inner {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .footer-disclaimer {
+            font-size: 0.6rem;
+            color: #555;
+            margin-top: 0.5rem;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .fade-up { animation: fadeUp 0.6s ease forwards; }
+        .fade-up-1 { animation-delay: 0.1s; opacity: 0; }
+        .fade-up-2 { animation-delay: 0.2s; opacity: 0; }
+        .fade-up-3 { animation-delay: 0.3s; opacity: 0; }
+        .fade-up-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">
+            <div class="nav-crest">JFC</div>
+            <span class="nav-title">JUVENTUS <span>FC</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a></li>
+            <li><a href="/players" class="{% if '/players' in request.url.path %}active{% endif %}">Squad</a></li>
+            <li><a href="/matches" class="{% if '/matches' in request.url.path %}active{% endif %}">Matches</a></li>
+        </ul>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="footer-inner">
+            <div>
+                <div class="footer-text">JUVENTUS FC FAN PAGE — FORZA JUVE</div>
+                <div class="footer-disclaimer">This is an unofficial fan site. Not affiliated with Juventus FC.</div>
+            </div>
+            <div class="nav-crest" style="width:48px;height:48px;font-size:16px;">JFC</div>
+        </div>
+    </footer>
+</body>
+</html>

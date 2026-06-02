@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block title %}Player — Juventus FC{% endblock %}
+{% block head %}
+<style>
+    .player-hero {
+        min-height: 60vh;
+        display: flex;
+        align-items: flex-end;
+        padding: 5rem 4rem 3rem;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    .player-hero-bg {
+        position: absolute; inset: 0; z-index: 0;
+        background: repeating-linear-gradient(
+            -45deg, #0a0a0a, #0a0a0a 20px, #0c0c0c 20px, #0c0c0c 40px
+        );
+    }
+    .player-hero-number {
+        position: absolute; right: -2rem; top: 50%; transform: translateY(-50%);
+        font-family: 'Bebas Neue', cursive;
+        font-size: 40vw;
+        color: rgba(255,255,255,0.025);
+        line-height: 1;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .player-hero-content {
+        position: relative; z-index: 1;
+        display: flex; gap: 3rem; align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    .player-big-avatar {
+        width: 140px; height: 140px;
+        background: linear-gradient(135deg, var(--gray), var(--gray-mid));
+        border: 3px solid var(--gold);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 3rem;
+        color: var(--gold);
+        flex-shrink: 0;
+        position: relative;
+    }
+    .player-big-num {
+        position: absolute; bottom: 0; right: 0;
+        width: 36px; height: 36px;
+        background: var(--gold);
+        color: var(--black);
+        border-radius: 50%;
+        border: 2px solid var(--black);
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .player-hero-info {
+        display: flex;
+    }
+    .player-hero-name {
+        font-family: 'Bebas Neue', cursive;
+        font-size: clamp(2.5rem, 7vw, 6rem);
+        letter-spacing: 1px;
+        line-height: 0.9;
+        margin-bottom: 0.75rem;
+    }
+    .player-hero-meta {
+        display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .player-hero-bio {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        max-width: 500px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    .detail-section {
+        padding: 3rem 4rem;
+        border-right: 1px solid #1a1a1a;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    .detail-section:nth-child(even) { border-right: none; }
+    .detail-section-title {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        margin-bottom: 1.5rem;
+        display: flex; align-items: center; gap: 1rem;
+    }
+    .detail-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #1f1f1f;
+    }
+
+    /* STATS BAR */
+    .stat-row {
+        display: flex; align-items: center; gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .stat-row-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        width: 100px;
+        flex-shrink: 0;
+    }
+    .stat-bar-track {
+        flex: 1;
+        height: 4px;
+        background: var(--gray-mid);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    .stat-bar-fill {
+        height: 100%;
+        background: var(--gold);
+        border-radius: 2px;
+        transition: width 1s ease;
+    }
+    .stat-row-val {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.2rem;
+        color: var(--gold);
+        width: 30px;
+        text-align: right;
+    }
+
+    /* CAREER TABLE */
+    .career-list { list-style: none; }
+    .career-item {
+        display: flex; align-items: flex-start; gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    .career-item:last-child { border-bottom: none; }
+    .career-bullet {
+        width: 8px; height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+    .career-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-muted);
+    }
+
+    /* RECENT PERF TABLE */
+    .perf-table { width: 100%; border-collapse: collapse; }
+    .perf-table th {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        text-align: left;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    .perf-table td {
+        padding: 1rem 0;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #111;
+        vertical-align: middle;
+    }
+    .perf-table td:last-child { text-align: right; }
+    .result-pill {
+        display: inline-block;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+        padding: 3px 8px;
+        border-radius: 2px;
+    }
+    .pill-w { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .pill-d { background: rgba(212,168,67,0.15); color: var(--gold); }
+    .pill-l { background: rgba(248,113,113,0.15); color: #f87171; }
+
+    .rating-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px;
+        border-radius: 4px;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.1rem;
+    }
+    .rating-high { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+    .rating-mid { background: rgba(212,168,67,0.15); color: var(--gold); border: 1px solid rgba(212,168,67,0.3); }
+    .rating-low { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+
+    /* PROFILE TABLE */
+    .profile-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+        background: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .profile-cell {
+        background: var(--black);
+        padding: 1.25rem 1.5rem;
+    }
+    .profile-cell .key {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+    .profile-cell .val {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .back-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 1rem 4rem;
+        border-bottom: 1px solid #1a1a1a;
+        transition: color 0.2s;
+        display: block;
+    }
+    .back-btn:hover { color: var(--gold); }
+
+    @media (max-width: 900px) {
+        .detail-grid { grid-template-columns: 1fr; }
+        .detail-section { border-right: none; }
+        .player-hero { padding: 4rem 1.5rem 2rem; }
+        .detail-section { padding: 2rem 1.5rem; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<a href="/players" class="back-btn">← Back to Squad</a>
+
+<div id="player-content">
+    <div style="padding:4rem;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:2px;">
+        LOADING PLAYER DATA...
+    </div>
+</div>
+
+<script>
+const playerId = "{{ player_id }}";
+
+function getRatingClass(r) {
+    if (r >= 7.5) return 'rating-high';
+    if (r >= 7.0) return 'rating-mid';
+    return 'rating-low';
+}
+
+function getResultPill(result) {
+    const first = result[0];
+    const cls = first === 'W' ? 'pill-w' : first === 'D' ? 'pill-d' : 'pill-l';
+    return `<span class="result-pill ${cls}">${result}</span>`;
+}
+
+fetch(`/api/players/${playerId}`)
+    .then(r => r.json())
+    .then(p => {
+        if (p.error) {
+            document.getElementById('player-content').innerHTML = '<div style="padding:4rem;color:#f87171;font-family:DM Mono,monospace;">Player not found.</div>';
+            return;
+        }
+
+        const statsMap = [
+            { label: 'Goals', val: p.goals, max: 30 },
+            { label: 'Assists', val: p.assists, max: 20 },
+            { label: 'Appearances', val: p.appearances, max: 38 },
+            { label: 'Rating', val: p.rating, max: 10 },
+        ];
+
+        document.title = `${p.name} — Juventus FC`;
+
+        document.getElementById('player-content').innerHTML = `
+        <!-- HERO -->
+        <div class="player-hero">
+            <div class="player-hero-bg"></div>
+            <div class="player-hero-number">${p.number}</div>
+            <div class="player-hero-content">
+                <div class="player-big-avatar">
+                    <img src="static/images/players/${p.id}.png"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                        style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top;">
+                    <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--gold);">
+                        ${p.image_initials}
+                    </span>
+                    
+                    <div class="player-big-num">${p.number}</div>
+                </div>
+                <div class="player-hero-info">
+                    <h1 class="player-hero-name">${p.name}</h1>
+                    <div class="player-hero-meta">
+                        <span class="badge badge-gold">${p.position}</span>
+                        <span class="badge badge-white">${p.nationality}</span>
+                        <span class="badge badge-white">Age ${p.age}</span>
+                        <span class="badge badge-white">${p.market_value}</span>
+                    </div>
+                    <p class="player-hero-bio">${p.bio}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAIL GRID -->
+        <div class="detail-grid">
+
+            <!-- SEASON STATS -->
+            <div class="detail-section">
+                <h2 class="detail-section-title">Season Stats</h2>
+                ${statsMap.map(s => `
+                <div class="stat-row">
+                    <span class="stat-row-label">${s.label}</span>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill" style="width:${Math.min(100, (s.val/s.max)*100)}%"></div>
+                    </div>
+                    <span class="stat-row-val">${s.val}</span>
+                </div>`).join('')}
+            </div>
+
+            <!-- PROFILE -->
+            <div class="detail-section">
+                <h2 class="detail-section-title">Profile</h2>
+                <div class="profile-grid">
+                    <div class="profile-cell"><div class="key">Nationality</div><div class="val">${p.nationality}</div></div>
+                    <div class="profile-cell"><div class="key">Age</div><div class="val">${p.age}</div></div>
+                    <div class="profile-cell"><div class="key">Height</div><div class="val">${p.height}</div></div>
+                    <div class="profile-cell"><div class="key">Preferred Foot</div><div class="val">${p.foot}</div></div>
+                    <div class="profile-cell"><div class="key">Joined</div><div class="val">${p.joined}</div></div>
+                    <div class="profile-cell"><div class="key">Contract Until</div><div class="val">${p.contract_until}</div></div>
+                    <div class="profile-cell"><div class="key">Market Value</div><div class="val" style="color:var(--gold)">${p.market_value}</div></div>
+                    <div class="profile-cell"><div class="key">Shirt Number</div><div class="val">${p.number}</div></div>
+                </div>
+            </div>
+
+            <!-- CAREER HIGHLIGHTS -->
+            <div class="detail-section">
+                <h2 class="detail-section-title">Career Highlights</h2>
+                <ul class="career-list">
+                    ${p.career_highlights.map(h => `
+                    <li class="career-item">
+                        <div class="career-bullet"></div>
+                        <span class="career-text">${h.highlight}</span>
+                    </li>`).join('')}
+                </ul>
+            </div>
+
+            <!-- RECENT PERFORMANCES -->
+            <div class="detail-section">
+                <h2 class="detail-section-title">Recent Performances</h2>
+                <table class="perf-table">
+                    <thead>
+                        <tr>
+                            <th>Opponent</th>
+                            <th>Date</th>
+                            <th>Result</th>
+                            ${p.position === 'Goalkeeper' ? '<th>Saves</th>' : ''}
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${p.recent_performances.map(perf => `
+                        <tr>
+                            <td>${perf.opponent}</td>
+                            <td style="color:var(--text-muted);font-size:0.8rem">${perf.date}</td>
+                            <td>${getResultPill(perf.result)}</td>
+                            ${p.position === 'Goalkeeper' ? `<td>${perf.saves ?? '-'}</td>` : ''}
+                            <td><span class="rating-badge ${getRatingClass(perf.rating)}">${perf.rating}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>`;
+    });
+</script>
+{% endblock %}
