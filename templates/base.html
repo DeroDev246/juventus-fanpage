@@ -229,6 +229,10 @@
             <li><a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a></li>
             <li><a href="/players" class="{% if '/players' in request.url.path %}active{% endif %}">Squad</a></li>
             <li><a href="/matches" class="{% if '/matches' in request.url.path %}active{% endif %}">Matches</a></li>
+            <li><a href="/news" class="{% if '/news' in request.url.path %}active{% endif %}">News</a></li>
+            <li><a href="/about" class="{% if '/about' in request.url.path %}active{% endif %}">About</a></li>
+            <li><a href="/contact" class="{% if '/contact' in request.url.path %}active{% endif %}">Contact</a></li>
+        </ul>
         </ul>
     </nav>
     <main>

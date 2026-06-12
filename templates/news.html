@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% block title %}News — Juventus FC{% endblock %}
+{% block head %}
+<style>
+    .page-hero {
+        padding: 5rem 4rem 3rem;
+        border-bottom: 1px solid #1a1a1a;
+        position: relative; overflow: hidden;
+    }
+    .page-hero-bg {
+        position: absolute; inset: 0; z-index: 0;
+        background: repeating-linear-gradient(
+            -45deg, #0a0a0a, #0a0a0a 20px, #0c0c0c 20px, #0c0c0c 40px
+        );
+    }
+    .page-hero-word {
+        position: absolute; right: -1rem; bottom: -2rem;
+        font-family: 'Bebas Neue', cursive;
+        font-size: clamp(6rem, 18vw, 16rem);
+        color: rgba(255,255,255,0.03);
+        line-height: 1; pointer-events: none; z-index: 0;
+    }
+    .page-hero-content { position: relative; z-index: 1; }
+
+    .news-container { max-width: 1400px; margin: 0 auto; padding: 4rem; }
+
+    /* FEATURED ARTICLE */
+    .featured-article {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        background: var(--gray);
+        border: 1px solid #1f1f1f;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 3rem;
+        transition: border-color 0.2s;
+        cursor: pointer;
+    }
+    .featured-article:hover { border-color: var(--gold); }
+    .featured-img {
+        background: repeating-linear-gradient(
+            -45deg, #111, #111 10px, #151515 10px, #151515 20px
+        );
+        min-height: 350px;
+        display: flex; align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+    }
+    .featured-img-label {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 8rem;
+        color: rgba(212,168,67,0.08);
+        user-select: none;
+    }
+    .featured-img-badge {
+        position: absolute; top: 1.5rem; left: 1.5rem;
+    }
+    .featured-content {
+        padding: 3rem;
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .featured-content .article-cat {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+    .featured-content h2 {
+        font-family: 'Bebas Neue', cursive;
+        font-size: clamp(1.8rem, 3vw, 3rem);
+        letter-spacing: 1px;
+        line-height: 1.05;
+        margin-bottom: 1rem;
+    }
+    .featured-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+    .article-meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 1px;
+        color: #444;
+        display: flex; gap: 1.5rem;
+    }
+
+    /* NEWS GRID */
+    .news-section-label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: #151515;
+        border: 1px solid #151515;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+    .news-card {
+        background: var(--black);
+        padding: 2rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+    }
+    .news-card:hover { background: var(--gray); }
+    .news-card::after {
+        content: '';
+        position: absolute; bottom: 0; left: 2rem; right: 2rem;
+        height: 1px; background: #1a1a1a;
+    }
+    .news-card .card-cat {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 0.75rem;
+    }
+    .news-card h3 {
+        font-weight: 600;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+    }
+    .news-card p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    .news-card .card-meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: #444;
+    }
+    .card-thumb {
+        width: 100%;
+        height: 140px;
+        background: repeating-linear-gradient(
+            -45deg, #111, #111 8px, #141414 8px, #141414 16px
+        );
+        border-radius: 2px;
+        margin-bottom: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 3rem;
+        color: rgba(212,168,67,0.1);
+    }
+
+    /* TRANSFER TICKER */
+    .ticker-bar {
+        background: var(--gold);
+        color: var(--black);
+        padding: 0.6rem 4rem;
+        display: flex; align-items: center; gap: 1rem;
+        overflow: hidden;
+        margin-bottom: 3rem;
+        border-radius: 2px;
+    }
+    .ticker-label {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1rem;
+        letter-spacing: 2px;
+        flex-shrink: 0;
+        border-right: 1px solid rgba(0,0,0,0.2);
+        padding-right: 1rem;
+    }
+    .ticker-scroll {
+        display: flex; gap: 3rem;
+        animation: scroll-ticker 30s linear infinite;
+        white-space: nowrap;
+    }
+    .ticker-item {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+    }
+    @keyframes scroll-ticker {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    /* SIDE COLUMN */
+    .news-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 3rem;
+        align-items: start;
+    }
+    /* .sidebar {} */
+    .sidebar-widget {
+        background: var(--gray);
+        border: 1px solid #1f1f1f;
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .sidebar-widget-title {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    .sidebar-item {
+        display: flex; gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #1a1a1a;
+        cursor: pointer;
+    }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item:hover .sidebar-item-title { color: var(--gold); }
+    .sidebar-num {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.5rem;
+        color: rgba(212,168,67,0.2);
+        line-height: 1;
+        flex-shrink: 0;
+        width: 28px;
+    }
+    .sidebar-item-title {
+        font-size: 0.8rem;
+        font-weight: 500;
+        line-height: 1.4;
+        transition: color 0.2s;
+    }
+    .sidebar-item-meta {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: #444;
+        margin-top: 4px;
+    }
+
+    @media (max-width: 1024px) {
+        .news-layout { grid-template-columns: 1fr; }
+        .featured-article { grid-template-columns: 1fr; }
+        .news-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .news-container { padding: 2rem 1.5rem; }
+        .page-hero { padding: 4rem 1.5rem 2rem; }
+        .news-grid { grid-template-columns: 1fr; }
+        .featured-content { padding: 2rem; }
+        .ticker-bar { padding: 0.6rem 1.5rem; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-word">NEWS</div>
+    <div class="page-hero-content">
+        <p class="section-label">Latest Updates</p>
+        <h1 class="section-title">CLUB<br>NEWS</h1>
+        <div class="gold-line"></div>
+        <p style="color:var(--text-muted);font-size:0.9rem;max-width:400px;line-height:1.7;">
+            Transfer rumours, match previews, post-match analysis and club announcements.
+        </p>
+    </div>
+</section>
+
+<!-- TRANSFER TICKER -->
+<div class="ticker-bar">
+    <div class="ticker-label">LATEST</div>
+    <div class="ticker-scroll" id="ticker">
+        <span class="ticker-item">🔴 Vlahović scores brace vs Napoli · Serie A Matchday 28</span>
+        <span class="ticker-item">⚪ Chiesa back in full training ahead of Fiorentina clash</span>
+        <span class="ticker-item">🔴 Juventus linked with €40M midfielder from Bundesliga</span>
+        <span class="ticker-item">⚪ Locatelli named in Italy squad for international break</span>
+        <span class="ticker-item">🔴 Allianz Stadium expansion plans approved by Turin council</span>
+        <span class="ticker-item">⚪ Bremer wins Serie A Defender of the Month award</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="ticker-item">🔴 Vlahović scores brace vs Napoli · Serie A Matchday 28</span>
+        <span class="ticker-item">⚪ Chiesa back in full training ahead of Fiorentina clash</span>
+        <span class="ticker-item">🔴 Juventus linked with €40M midfielder from Bundesliga</span>
+        <span class="ticker-item">⚪ Locatelli named in Italy squad for international break</span>
+        <span class="ticker-item">🔴 Allianz Stadium expansion plans approved by Turin council</span>
+        <span class="ticker-item">⚪ Bremer wins Serie A Defender of the Month award</span>
+    </div>
+</div>
+
+<div class="news-container">
+
+    <!-- FEATURED ARTICLE -->
+    <div class="featured-article">
+        <div class="featured-img">
+            <span class="featured-img-label">JFC</span>
+            <div class="featured-img-badge">
+                <span class="badge badge-gold">Featured</span>
+            </div>
+        </div>
+        <div class="featured-content">
+            <div class="article-cat">Match Report · Serie A</div>
+            <h2>VLAHOVIĆ DOUBLE SINKS NAPOLI IN CRUCIAL TOP-FOUR CLASH</h2>
+            <p>Dušan Vlahović produced a stunning individual display at the Allianz Stadium, netting twice to hand Juventus a vital 2-1 victory over Napoli that strengthens their grip on a Champions League spot.</p>
+            <p>The Serbian striker opened the scoring with a clinical first-time finish before doubling the lead with a thunderous long-range effort that left the keeper rooted. Napoli pulled one back late but Juventus held on.</p>
+            <div class="article-meta">
+                <span>Mar 9, 2024</span>
+                <span>By Staff Writer</span>
+                <span>5 min read</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="news-layout">
+        <div>
+            <!-- LATEST NEWS -->
+            <div class="news-section-label">Latest News</div>
+            <div class="news-grid">
+                <div class="news-card">
+                    <div class="card-thumb">⚽</div>
+                    <div class="card-cat">Transfer News</div>
+                    <h3>Juventus Target Bundesliga Star in Summer Window</h3>
+                    <p>Juventus are reportedly in advanced talks to sign a high-profile midfielder ahead of the summer transfer window.</p>
+                    <div class="card-meta">Mar 8, 2024 · 3 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-thumb">🏆</div>
+                    <div class="card-cat">Match Preview</div>
+                    <h3>Fiorentina vs Juventus: Coppa Italia Semi-Final Preview</h3>
+                    <p>Juventus travel to Florence for the second leg of the Coppa Italia semi-final with a narrow advantage from the first leg.</p>
+                    <div class="card-meta">Mar 7, 2024 · 4 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-thumb">💪</div>
+                    <div class="card-cat">Injury Update</div>
+                    <h3>Chiesa Returns to Full Training — Set for Comeback</h3>
+                    <p>Federico Chiesa has rejoined full first-team training after his injury layoff and is in contention for the Fiorentina clash.</p>
+                    <div class="card-meta">Mar 6, 2024 · 2 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-thumb">📊</div>
+                    <div class="card-cat">Analysis</div>
+                    <h3>Tactical Breakdown: How Juventus Shut Out AC Milan</h3>
+                    <p>A deep dive into the defensive structure that kept one of Serie A's most dangerous attacks completely quiet at the Allianz.</p>
+                    <div class="card-meta">Mar 3, 2024 · 6 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-thumb">🌍</div>
+                    <div class="card-cat">International</div>
+                    <h3>Locatelli, Gatti Called Up for Italy International Break</h3>
+                    <p>Four Juventus players have been named in their respective national squads for the upcoming international fixtures.</p>
+                    <div class="card-meta">Mar 5, 2024 · 2 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-thumb">🏟️</div>
+                    <div class="card-cat">Club News</div>
+                    <h3>Allianz Stadium Expansion: What We Know So Far</h3>
+                    <p>Turin city council has approved initial plans to expand the Allianz Stadium capacity from 41,000 to 55,000 seats.</p>
+                    <div class="card-meta">Mar 4, 2024 · 3 min read</div>
+                </div>
+            </div>
+
+            <!-- OPINION -->
+            <div class="news-section-label">Opinion & Analysis</div>
+            <div class="news-grid" style="grid-template-columns: repeat(2,1fr);">
+                <div class="news-card">
+                    <div class="card-cat">Opinion</div>
+                    <h3>Why Bremer Is Now One of Europe's Best Defenders</h3>
+                    <p>Since joining from Torino, the Brazilian has transformed Juventus's backline. We make the case for his inclusion in the Ballon d'Or conversation.</p>
+                    <div class="card-meta">Mar 1, 2024 · 5 min read</div>
+                </div>
+                <div class="news-card">
+                    <div class="card-cat">Analysis</div>
+                    <h3>Rabiot's Evolution: From PSG Outcast to Juve Talisman</h3>
+                    <p>Few players have transformed their reputation as dramatically as Adrien Rabiot since arriving in Turin on a free transfer.</p>
+                    <div class="card-meta">Feb 28, 2024 · 4 min read</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-widget">
+                <div class="sidebar-widget-title">Most Read</div>
+                <div class="sidebar-item">
+                    <div class="sidebar-num">01</div>
+                    <div>
+                        <div class="sidebar-item-title">Vlahović contract talks stall — latest update</div>
+                        <div class="sidebar-item-meta">12.4K reads</div>
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-num">02</div>
+                    <div>
+                        <div class="sidebar-item-title">Chiesa injury latest — return date confirmed</div>
+                        <div class="sidebar-item-meta">9.8K reads</div>
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-num">03</div>
+                    <div>
+                        <div class="sidebar-item-title">Juventus confirm summer transfer targets</div>
+                        <div class="sidebar-item-meta">8.1K reads</div>
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-num">04</div>
+                    <div>
+                        <div class="sidebar-item-title">Allianz Stadium expansion: full details</div>
+                        <div class="sidebar-item-meta">6.5K reads</div>
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-num">05</div>
+                    <div>
+                        <div class="sidebar-item-title">Rabiot future: stay or go this summer?</div>
+                        <div class="sidebar-item-meta">5.9K reads</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-widget">
+                <div class="sidebar-widget-title">Categories</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                    <span class="badge badge-gold">Match Reports</span>
+                    <span class="badge badge-white">Transfers</span>
+                    <span class="badge badge-white">Analysis</span>
+                    <span class="badge badge-white">Injuries</span>
+                    <span class="badge badge-white">Opinion</span>
+                    <span class="badge badge-white">Club News</span>
+                    <span class="badge badge-white">International</span>
+                    <span class="badge badge-white">Previews</span>
+                </div>
+            </div>
+
+            <div class="sidebar-widget">
+                <div class="sidebar-widget-title">Season Stats</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#2a2a2a;border-radius:2px;overflow:hidden;">
+                    <div style="background:var(--black);padding:1rem;text-align:center;">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--gold);line-height:1;">27</div>
+                        <div style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Matches</div>
+                    </div>
+                    <div style="background:var(--black);padding:1rem;text-align:center;">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--gold);line-height:1;">16</div>
+                        <div style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Wins</div>
+                    </div>
+                    <div style="background:var(--black);padding:1rem;text-align:center;">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--gold);line-height:1;">48</div>
+                        <div style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Goals</div>
+                    </div>
+                    <div style="background:var(--black);padding:1rem;text-align:center;">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--gold);line-height:1;">3rd</div>
+                        <div style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Position</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

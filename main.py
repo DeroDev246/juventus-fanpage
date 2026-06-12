@@ -32,3 +32,17 @@ async def player_detail(request: Request, player_id: int):
 @app.get("/matches", response_class=HTMLResponse)
 async def matches_page(request: Request):
     return templates.TemplateResponse("matches.html", {"request": request})
+
+@app.get("/news", response_class=HTMLResponse)
+async def news_page(request: Request):
+    return templates.TemplateResponse("news.html", {"request": request})
+ 
+ 
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+ 
+ 
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_page(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})

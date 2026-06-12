@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+{% block title %}About — Juventus FC{% endblock %}
+{% block head %}
+<style>
+    .page-hero {
+        padding: 5rem 4rem 3rem;
+        border-bottom: 1px solid #1a1a1a;
+        position: relative; overflow: hidden;
+    }
+    .page-hero-bg {
+        position: absolute; inset: 0; z-index: 0;
+        background: repeating-linear-gradient(
+            -45deg, #0a0a0a, #0a0a0a 20px, #0c0c0c 20px, #0c0c0c 40px
+        );
+    }
+    .page-hero-word {
+        position: absolute; right: -1rem; bottom: -2rem;
+        font-family: 'Bebas Neue', cursive;
+        font-size: clamp(6rem, 18vw, 16rem);
+        color: rgba(255,255,255,0.03);
+        line-height: 1; pointer-events: none; z-index: 0;
+    }
+    .page-hero-content { position: relative; z-index: 1; }
+
+    .about-container { max-width: 1400px; margin: 0 auto; }
+
+    /* HISTORY TIMELINE */
+    .section { padding: 5rem 4rem; border-bottom: 1px solid #1a1a1a; }
+
+    .timeline {
+        position: relative;
+        margin-top: 3rem;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 120px;
+        top: 0; bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    .timeline-item {
+        display: flex; gap: 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+    .timeline-year {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.5rem;
+        color: var(--gold);
+        width: 100px;
+        flex-shrink: 0;
+        text-align: right;
+        padding-top: 2px;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: 113px;
+        top: 8px;
+        width: 14px; height: 14px;
+        background: var(--gold);
+        border-radius: 50%;
+        border: 2px solid var(--black);
+        flex-shrink: 0;
+    }
+    .timeline-content {
+        padding-left: 2rem;
+        flex: 1;
+    }
+    .timeline-content h3 {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+    .timeline-content p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        line-height: 1.7;
+    }
+
+    /* HONOURS */
+    .honours-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+    .honour-card {
+        background: var(--black);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: background 0.2s;
+    }
+    .honour-card:hover { background: var(--gray); }
+    .honour-count {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 4rem;
+        color: var(--gold);
+        line-height: 1;
+        display: block;
+    }
+    .honour-name {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+    .honour-years {
+        font-size: 0.75rem;
+        color: #444;
+        margin-top: 0.5rem;
+        line-height: 1.6;
+    }
+
+    /* LEGENDS */
+    .legends-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .legend-card {
+        background: var(--gray);
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.25s;
+    }
+    .legend-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-4px);
+    }
+    .legend-avatar {
+        width: 64px; height: 64px;
+        background: linear-gradient(135deg, var(--black), var(--gray-mid));
+        border: 2px solid var(--gold);
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.1rem;
+        color: var(--gold);
+    }
+    .legend-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    .legend-years {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+    .legend-stat {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.4rem;
+        color: var(--gold);
+        display: block;
+        line-height: 1;
+    }
+    .legend-stat-lbl {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.5rem;
+        letter-spacing: 1px;
+        color: #444;
+    }
+
+    /* ABOUT SITE */
+    .about-site {
+        background: var(--gray);
+        border: 1px solid #1f1f1f;
+        border-radius: 4px;
+        padding: 3rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+        margin-top: 2rem;
+    }
+    .about-site h3 {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+    }
+    .about-site p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 1rem;
+    }
+    .tech-stack {
+        display: flex; flex-wrap: wrap; gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+        .honours-grid { grid-template-columns: repeat(2, 1fr); }
+        .legends-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .section { padding: 3rem 1.5rem; }
+        .page-hero { padding: 4rem 1.5rem 2rem; }
+        .timeline::before { left: 60px; }
+        .timeline-year { width: 50px; font-size: 1rem; }
+        .timeline-dot { left: 53px; }
+        .honours-grid { grid-template-columns: repeat(2, 1fr); }
+        .legends-grid { grid-template-columns: repeat(2, 1fr); }
+        .about-site { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-word">STORIA</div>
+    <div class="page-hero-content">
+        <p class="section-label">Est. 1897 · Turin, Italy</p>
+        <h1 class="section-title">ABOUT<br>JUVENTUS</h1>
+        <div class="gold-line"></div>
+        <p style="color:var(--text-muted);font-size:0.9rem;max-width:400px;line-height:1.7;">
+            The most successful club in Italian football history. 127 years of Black and White glory.
+        </p>
+    </div>
+</section>
+
+<div class="about-container">
+
+    <!-- HONOURS -->
+    <div class="section">
+        <p class="section-label">Trophy Cabinet</p>
+        <h2 class="section-title">HONOURS</h2>
+        <div class="gold-line"></div>
+        <div class="honours-grid">
+            <div class="honour-card">
+                <span class="honour-count">36</span>
+                <div class="honour-name">Serie A Titles</div>
+                <div class="honour-years">Most in Italian football history</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">14</span>
+                <div class="honour-name">Coppa Italia</div>
+                <div class="honour-years">Record number of wins</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">2</span>
+                <div class="honour-name">UEFA Champions League</div>
+                <div class="honour-years">1985, 1996</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">9</span>
+                <div class="honour-name">Supercoppa Italiana</div>
+                <div class="honour-years">Most recent: 2020</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">3</span>
+                <div class="honour-name">UEFA Cup / Europa</div>
+                <div class="honour-years">1977, 1990, 1993</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">2</span>
+                <div class="honour-name">UEFA Super Cup</div>
+                <div class="honour-years">1984, 1996</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">2</span>
+                <div class="honour-name">Intercontinental Cup</div>
+                <div class="honour-years">1985, 1996</div>
+            </div>
+            <div class="honour-card">
+                <span class="honour-count">1</span>
+                <div class="honour-name">UEFA Cup Winners' Cup</div>
+                <div class="honour-years">1984</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY TIMELINE -->
+    <div class="section">
+        <p class="section-label">127 Years of History</p>
+        <h2 class="section-title">CLUB<br>HISTORY</h2>
+        <div class="gold-line"></div>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">1897</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Club Founded</h3>
+                    <p>Juventus Football Club founded on November 1, 1897 by a group of students in Turin. The club originally wore pink shirts before adopting the iconic black and white stripes in 1903.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1923</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Agnelli Family Takes Over</h3>
+                    <p>Edoardo Agnelli, son of Fiat founder Giovanni Agnelli, becomes president. The Agnelli family's stewardship begins a new era of professionalism and ambition for the club.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1930s</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>First Golden Era — Five Consecutive Titles</h3>
+                    <p>Juventus win five consecutive Serie A titles from 1930 to 1935, establishing themselves as Italy's dominant force with legends like Giampiero Combi and Felice Borel.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1985</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>European Champions</h3>
+                    <p>Juventus win the European Cup (now Champions League) defeating Liverpool 1-0 in the Heysel Stadium final, with Michel Platini scoring the winning penalty.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1996</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Champions League Glory Again</h3>
+                    <p>A second European Cup triumph, defeating Ajax on penalties in Rome. A squad featuring Del Piero, Vialli, Zidane and Conte cements Juventus as a true continental superpower.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2006</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Calciopoli and Relegation</h3>
+                    <p>Juventus are relegated to Serie B following the Calciopoli scandal — a dark chapter. The club bounce straight back to Serie A as champions, showing true resilience.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2012</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>The Nine-Peat Begins</h3>
+                    <p>Under Antonio Conte, Juventus begin an unprecedented run of nine consecutive Serie A titles — the longest winning streak in the history of any top European league.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2023</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>New Era Under Allegri</h3>
+                    <p>Juventus continue their rebuild under Massimiliano Allegri, with a young squad led by Vlahović and Chiesa targeting a return to Champions League glory.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEGENDS -->
+    <div class="section">
+        <p class="section-label">Club Icons</p>
+        <h2 class="section-title">LEGENDS</h2>
+        <div class="gold-line"></div>
+        <div class="legends-grid">
+            <div class="legend-card">
+                <div class="legend-avatar">DP</div>
+                <div class="legend-name">Alessandro Del Piero</div>
+                <div class="legend-years">1993 – 2012</div>
+                <span class="legend-stat">290</span>
+                <span class="legend-stat-lbl">Goals</span>
+            </div>
+            <div class="legend-card">
+                <div class="legend-avatar">GC</div>
+                <div class="legend-name">Gianluigi Buffon</div>
+                <div class="legend-years">2001 – 2018</div>
+                <span class="legend-stat">656</span>
+                <span class="legend-stat-lbl">Appearances</span>
+            </div>
+            <div class="legend-card">
+                <div class="legend-avatar">MP</div>
+                <div class="legend-name">Michel Platini</div>
+                <div class="legend-years">1982 – 1987</div>
+                <span class="legend-stat">68</span>
+                <span class="legend-stat-lbl">Goals</span>
+            </div>
+            <div class="legend-card">
+                <div class="legend-avatar">ZZ</div>
+                <div class="legend-name">Zinedine Zidane</div>
+                <div class="legend-years">1996 – 2001</div>
+                <span class="legend-stat">31</span>
+                <span class="legend-stat-lbl">Goals</span>
+            </div>
+            <div class="legend-card">
+                <div class="legend-avatar">CR</div>
+                <div class="legend-name">Cristiano Ronaldo</div>
+                <div class="legend-years">2018 – 2021</div>
+                <span class="legend-stat">101</span>
+                <span class="legend-stat-lbl">Goals</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT THIS SITE -->
+    <div class="section" style="border-bottom:none;">
+        <p class="section-label">This Website</p>
+        <h2 class="section-title">ABOUT<br>THIS SITE</h2>
+        <div class="gold-line"></div>
+        <div class="about-site">
+            <div>
+                <h3>Built by a Juventus Fan</h3>
+                <p>This is an unofficial Juventus FC fan page built with passion for the Bianconeri. It is not affiliated with, endorsed by, or connected to Juventus FC in any official capacity.</p>
+                <p>The site provides squad information, match schedules, results and news for fellow Juventus supporters around the world.</p>
+                <p>All player statistics and match data are for informational purposes and may not reflect official club records.</p>
+                <div class="tech-stack">
+                    <span class="badge badge-gold">FastAPI</span>
+                    <span class="badge badge-white">Python</span>
+                    <span class="badge badge-white">MySQL</span>
+                    <span class="badge badge-white">SQLAlchemy</span>
+                    <span class="badge badge-white">Jinja2</span>
+                    <span class="badge badge-white">Docker</span>
+                    <span class="badge badge-white">Render</span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--black),var(--gray-mid));border:3px solid var(--gold);margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:2.5rem;color:var(--gold);">JFC</div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;">FORZA JUVENTUS</div>
+                <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:2px;color:var(--text-muted);margin-top:0.5rem;">EST. 1897 · TURIN, ITALY</div>
+                <div style="margin-top:1.5rem;">
+                    <a href="/contact" class="btn btn-gold">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
