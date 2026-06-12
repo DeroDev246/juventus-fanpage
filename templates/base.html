@@ -53,6 +53,13 @@
             letter-spacing: 1px;
             color: var(--gold);
         }
+
+        .nav-crest-img {
+            height: 35px;
+            width: auto;
+            object-fit: contain;
+            margin-right: 10px;
+        }
         .nav-title {
             font-family: 'Bebas Neue', cursive;
             font-size: 1.5rem;
@@ -221,9 +228,9 @@
 </head>
 <body>
     <nav>
-        <a href="/" class="nav-logo">
-            <div class="nav-crest">JFC</div>
-            <span class="nav-title">JUVENTUS <span>FC</span></span>
+        <a href="/" class="nav-logo>
+            <img src="{{url_for('static', path='images/logo/juventus-logo.png') }}" alt="Juventus Badge" class="nav-crest-img">
+            <span class="nav-title">JUVENTUS<span>FC</span></span>
         </a>
         <ul class="nav-links">
             <li><a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a></li>
