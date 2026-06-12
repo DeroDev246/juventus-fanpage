@@ -31,7 +31,7 @@ def get_upcoming(db: Session = Depends(get_db)):
 
 @router.get("/result", response_model=List[MatchOut])
 def get_results(db: Session = Depends(get_db)):
-    return _load_matches(db, MatchStatusEnum.results)
+    return _load_matches(db, MatchStatusEnum.result)
 
 @router.get("/live", response_model=List[MatchOut])
 def get_live(db: Session = Depends(get_db)):
