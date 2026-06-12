@@ -21,7 +21,7 @@ def get_all_matches(db: Session = Depends(get_db)):
         return [MatchOut.model_validate(m) for m in matches]
     return{
         "upcoming" : serialize(_load_matches(db, MatchStatusEnum.upcoming)),
-        "results" : serialize(_load_matches(db, MatchStatusEnum.result)),
+        "result" : serialize(_load_matches(db, MatchStatusEnum.result)),
         "live" : serialize(_load_matches(db, MatchStatusEnum.live)),
     }
 
