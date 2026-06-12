@@ -29,7 +29,7 @@ def get_all_matches(db: Session = Depends(get_db)):
 def get_upcoming(db: Session = Depends(get_db)):
     return _load_matches(db, MatchStatusEnum.upcoming)
 
-@router.get("/results", response_model=List[MatchOut])
+@router.get("/result", response_model=List[MatchOut])
 def get_results(db: Session = Depends(get_db)):
     return _load_matches(db, MatchStatusEnum.results)
 
