@@ -19,7 +19,7 @@ class PositionEnum(str, enum.Enum):
 class MatchStatusEnum(str, enum.Enum):
     upcoming = "upcoming"
     live     = "live"
-    results   = "results"
+    result   = "result"
 
 
 # PLAYERS
