@@ -21,7 +21,7 @@ def get_all_matches(db: Session = Depends(get_db)):
         return [MatchOut.model_validate(m) for m in matches]
     return{
         "upcoming" : serialize(_load_matches(db, MatchStatusEnum.upcoming)),
-        "result" : serialize(_load_matches(db, MatchStatusEnum.result)),
+        "results" : serialize(_load_matches(db, MatchStatusEnum.results)),
         "live" : serialize(_load_matches(db, MatchStatusEnum.live)),
     }
 
@@ -29,9 +29,9 @@ def get_all_matches(db: Session = Depends(get_db)):
 def get_upcoming(db: Session = Depends(get_db)):
     return _load_matches(db, MatchStatusEnum.upcoming)
 
-@router.get("/result", response_model=List[MatchOut])
+@router.get("/results", response_model=List[MatchOut])
 def get_results(db: Session = Depends(get_db)):
-    return _load_matches(db, MatchStatusEnum.result)
+    return _load_matches(db, MatchStatusEnum.results)
 
 @router.get("/live", response_model=List[MatchOut])
 def get_live(db: Session = Depends(get_db)):
