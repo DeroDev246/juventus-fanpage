@@ -188,6 +188,13 @@
             padding: 3rem 4rem;
             margin-top: 6rem;
         }
+
+        .footer-crest-img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
         .footer-inner {
             max-width: 1400px; margin: 0 auto;
             display: flex; justify-content: space-between; align-items: center;
@@ -229,7 +236,7 @@
 <body>
     <nav>
         <a href="/" class="nav-logo>
-            <img src="{{url_for('static', path='images/logo/juventus-logo.png') }}" alt="Juventus Badge" class="nav-crest-img">
+            <img src="{{ url_for('static', path='images/logo/juventus-logo.png') }}" alt="Juventus Badge" class="nav-crest-img">
             <span class="nav-title">JUVENTUS<span>FC</span></span>
         </a>
         <ul class="nav-links">
@@ -251,7 +258,9 @@
                 <div class="footer-text">JUVENTUS FC FAN PAGE — FORZA JUVE</div>
                 <div class="footer-disclaimer">This is an unofficial fan site. Not affiliated with Juventus FC.</div>
             </div>
-            <div class="nav-crest" style="width:48px;height:48px;font-size:16px;">JFC</div>
+            <div class="footer-badge-wrapper">
+                <img src="{{ url_for('static', path='images/logo/juventus-logo.png') }}" alt="Juventus Badge" class="footer-crest-img">
+            </div>
         </div>
     </footer>
 </body>
