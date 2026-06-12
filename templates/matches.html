@@ -403,7 +403,7 @@ function loadAllMatches() {
         .then(r => r.json())
         .then(data => {
             renderUpcoming(data.upcoming || []);
-            renderResults(data.results || []);
+            renderResults(data.result || []);
             renderLive(data.live || []);
         });
 }
